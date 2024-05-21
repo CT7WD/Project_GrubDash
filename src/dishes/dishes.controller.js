@@ -35,9 +35,41 @@ function bodyDataHas(propertyName) {
 
 
 
+// ***CREATE***
+function create(req, res) {
+    const { data: { name, description, price, image_url } = {} } = req.body;
+    const newDish = {
+        id: nextId, // Increment last id then assign as the current ID
+        name: name,
+        description: description,
+        price: price,
+        image_url: image_url,
+    };
+    dishes.push(newDish);
+    res.status(201).json({ data: newDish });
+}
 
+// NAME VALIDATION
+function nameIsValid(req, res, next) {
+    const { data: { name } = {} } = req.body;
+    if ( name !== "" ) {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `Must include a ${name}.`
+    })
 
+}
 
+// DESCRIPTION VALIDATION
+function descriptionIsValid(req, res, next) {
+    const { data: }
+}
+
+// PRICE VALIDATION
+
+// IMAGE URL VALIDATION
 
 
 
@@ -48,5 +80,16 @@ function bodyDataHas(propertyName) {
 
 // ***EXPORTS***
 module.exports = {
-    list
+    list,
+    create: [
+        bodyDataHas("name"),
+        bodyDataHas("description"),
+        bodyDataHas("price"),
+        bodyDataHas("image_url"),
+        nameIsValid,
+        descriptionIsValid,
+        priceIsValid,
+        imageUrlIsValid,
+        create
+    ],
 }
