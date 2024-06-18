@@ -31,22 +31,35 @@ function bodyDataHas(propertyName) {
     }
 }
 
+function dishExists(req, res, next) {
+    const { id } = req.params;
+    const foundDish = dishes.find(dish => dish.id === Number(id));
+    if (foundDish) {
+      res.locals.dish = foundDish;
+      return next();
+    }
+    next({
+      status: 404,
+      message: `Dish id not found: ${id}`,
+    });
+  };
+
 // ****HANDLERS****
 // ***LIST DISHES***
 function list(req, res) {
     const { id } = req.params;
-    res.json({ data: dishes.filter(id ? url => url.id === id : () => true) });
+    res.json({ data: dishes.filter(id ? dish => dish.id === id : () => true) });
 }
 
 // ***CREATE***
 function create(req, res) {
     const { data: { name, description, price, image_url } = {} } = req.body;
     const newDish = {
-        id: nextId, 
-        name: name,
-        description: description,
-        price: price,
-        image_url: image_url,
+        id: nextId(), 
+        name,
+        description,
+        price,
+        image_url,
     };
     dishes.push(newDish);
     res.status(201).json({ data: newDish });
@@ -101,10 +114,24 @@ function    imageUrlIsValid(req, res, next) {
     })
 }
 
+// ***READ***
+function read(req, res) {
+    res.json({ data: res.locals.dish })
+  }
 
-
-
-
+// ***UPDATE***
+  function update(req, res) {
+    const dish = res.locals.dish;
+    const { data: { name, description, price, image_url } = {} } = req.body;
+  
+    // update the paste
+    dish.name = name;
+    dish.description = description;
+    dish.price = price;
+    dish.image_url = image_url;
+  
+    res.json({ data: dish });
+  }
 
 
 // ***EXPORTS***
@@ -121,4 +148,20 @@ module.exports = {
         imageUrlIsValid,
         create
     ],
+    read: [
+        dishExists,
+        read
+    ],
+    update: [
+        dishExists,
+        bodyDataHas("name"),
+        bodyDataHas("description"),
+        bodyDataHas("price"),
+        bodyDataHas("image_url"),
+        nameIsValid,
+        descriptionIsValid,
+        priceIsValid,
+        imageUrlIsValid,
+        update
+    ]
 }
