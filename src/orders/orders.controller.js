@@ -9,17 +9,17 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /orders handlers needed to make the tests pass
 
 
+
+
+// *****CRUDL FLOW*****
+
+
+
+
 // ***LIST***
 function list(req, res) {
     res.json({ data: orders });
 }
-
-// *****CRUD FLOW*****
-
-
-
-
-
 
 
 

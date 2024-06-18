@@ -9,15 +9,13 @@ const nextId = require("../utils/nextId");
 // TODO: Implement the /dishes handlers needed to make the tests pass
 
 
-// ***LIST DISHES***
-function list(req, res) {
-    const { id } = req.params;
-    res.json({ data: dishes.filter(id ? url => url.id === id : () => true) });
-}
 
 
-// *****CRUD FLOW*****
+
+// *****CRUDL FLOW*****
 // ****DISHES CANNOT BE DELETED****
+
+// ****FUNCTIONS****
 
 //FIND IF PROPERTY EXISTS IN REQUEST BODY
 function bodyDataHas(propertyName) {
@@ -28,18 +26,23 @@ function bodyDataHas(propertyName) {
         }
         next({
             status: 400,
-            message: `Must include a ${propertyName}`
+            message: `Dish must include a ${propertyName}`
         })
     }
 }
 
-
+// ****HANDLERS****
+// ***LIST DISHES***
+function list(req, res) {
+    const { id } = req.params;
+    res.json({ data: dishes.filter(id ? url => url.id === id : () => true) });
+}
 
 // ***CREATE***
 function create(req, res) {
     const { data: { name, description, price, image_url } = {} } = req.body;
     const newDish = {
-        id: nextId, // Increment last id then assign as the current ID
+        id: nextId, 
         name: name,
         description: description,
         price: price,
@@ -57,20 +60,46 @@ function nameIsValid(req, res, next) {
     }
     next({
         status: 400,
-        message: `Must include a ${name}.`
+        message: `Dish must include a ${name}.`
     })
 
 }
 
 // DESCRIPTION VALIDATION
 function descriptionIsValid(req, res, next) {
-    const { data: }
+    const { data: { description } = {} } = req.body;
+    if ( description !== "") {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `Dish must include a ${description}.`
+    })
 }
 
 // PRICE VALIDATION
+function priceIsValid(req, res, next) {
+    const { data: { price } = {} } = req.body;
+    if ( price !== "") {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `Dish must include a ${price}.`
+    })
+}
 
 // IMAGE URL VALIDATION
-
+function    imageUrlIsValid(req, res, next) {
+    const { data: { image_url } = {} } = req.body;
+    if ( image_url !== "") {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `Dish must include a ${image_url}.`
+    })
+}
 
 
 
