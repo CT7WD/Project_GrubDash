@@ -93,7 +93,7 @@ function descriptionIsValid(req, res, next) {
 // PRICE VALIDATION
 function priceIsValid(req, res, next) {
     const { data: { price } = {} } = req.body;
-    if ( price !== "") {
+    if ( price !== undefined && price !== "" && typeof price === 'number' && price > 0) {
         return next();
     }
     next({
@@ -124,7 +124,7 @@ function read(req, res) {
     const dish = res.locals.dish;
     const { data: { name, description, price, image_url } = {} } = req.body;
   
-    // update the paste
+    // update the dish
     dish.name = name;
     dish.description = description;
     dish.price = price;
