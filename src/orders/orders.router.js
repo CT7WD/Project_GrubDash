@@ -8,13 +8,17 @@ const dishesRouter = require("../dishes/dishes.router");
 
 // router.use("/:orderId/pastes", controller.orderExists, dishesRouter);
 
-router.route("/:orderId")
-    // .get(controller.read)
-    .all(methodNotAllowed);
-
-
-router.route("/")
+router
+    .route("/")
     .get(controller.list)
+    .post(controller.create)
+    .all(methodNotAllowed)
+
+router
+    .route("/:orderId")
+    .get(controller.read)
+    .put(controller.update)
+    .delete(controller.destroy)
     .all(methodNotAllowed);
 
 
