@@ -79,7 +79,7 @@ function orderIdMatches(req, res, next) {
     if (id && id !== orderId) {
         return next({
             status: 400,
-            message: `Order id does not match route id. Order: ${id}, Route: ${orderId}`,
+            message: `Order id does not match route id. Order: ${id}, Route: ${orderId}.`,
         });
     }
 
@@ -150,10 +150,8 @@ module.exports = {
     create: [
         bodyDataHas("deliverTo"),
         bodyDataHas("mobileNumber"),
-        bodyDataHas("status"),
         bodyDataHas("dishes"),
         dishesIsValid,
-        statusIsValid,
         create
     ],
     read: [
