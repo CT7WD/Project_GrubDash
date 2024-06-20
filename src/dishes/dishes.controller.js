@@ -26,29 +26,44 @@ function bodyDataHas(propertyName) {
         }
         next({
             status: 400,
-            message: `Dish must include a ${propertyName}`
+            message: `Must include a ${propertyName}`
         })
     }
 }
 
 function dishExists(req, res, next) {
-    const { id } = req.params;
-    const foundDish = dishes.find(dish => dish.id === Number(id));
+    const { dishId } = req.params;
+    const foundDish = dishes.find(dish => dish.id === dishId);
     if (foundDish) {
       res.locals.dish = foundDish;
       return next();
     }
     next({
       status: 404,
-      message: `Dish id not found: ${id}`,
+      message: `Dish id not found: ${dishId}`,
     });
   };
+
+
+// VALIDATE DISH ID MATCH
+function dishIdMatches(req, res, next) {
+    const { dishId } = req.params;
+    const { data: { id } = {} } = req.body;
+
+    if (id && id !== dishId) {
+        return next({
+            status: 400,
+            message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
+        });
+    }
+
+    next();
+}
 
 // ****HANDLERS****
 // ***LIST DISHES***
 function list(req, res) {
-    const { id } = req.params;
-    res.json({ data: dishes.filter(id ? dish => dish.id === id : () => true) });
+    res.json({ data: dishes });
 }
 
 // ***CREATE***
@@ -73,7 +88,7 @@ function nameIsValid(req, res, next) {
     }
     next({
         status: 400,
-        message: `Dish must include a ${name}.`
+        message: `Dish must include a name.`
     })
 
 }
@@ -86,11 +101,15 @@ function descriptionIsValid(req, res, next) {
     }
     next({
         status: 400,
-        message: `Dish must include a ${description}.`
+        message: `Dish must include a description.`
     })
 }
 
 // PRICE VALIDATION
+/*price property is missing	Dish must include a price
+price property 0 or less	Dish must have a price that is an integer greater than 0
+price property is not an integer	Dish must have a price that is an integer greater than 0*/
+
 function priceIsValid(req, res, next) {
     const { data: { price } = {} } = req.body;
     if ( price !== undefined && price !== "" && typeof price === 'number' && price > 0) {
@@ -98,7 +117,7 @@ function priceIsValid(req, res, next) {
     }
     next({
         status: 400,
-        message: `Dish must include a ${price}.`
+        message: `Dish have a price that is an integer greater than 0.`
     })
 }
 
@@ -110,7 +129,7 @@ function    imageUrlIsValid(req, res, next) {
     }
     next({
         status: 400,
-        message: `Dish must include a ${image_url}.`
+        message: `Dish must include a image_url.`
     })
 }
 
@@ -156,6 +175,7 @@ module.exports = {
     ],
     update: [
         dishExists,
+        dishIdMatches,
         bodyDataHas("name"),
         bodyDataHas("description"),
         bodyDataHas("price"),
